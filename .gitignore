@@ -1,2 +1,25 @@
+# Módulos e dependências instalados
+/node_modules
+
+# Arquivo de logs
+npm-debug.log
+
+# Arquivos gerados pelo editor
+*.swp
+*.swo
+*.swn
+
+# Arquivos gerados pelo sistema operacional
+.DS_Store
+
+# Variáveis de ambiente
 .env
-.node_modules
+
+# Arquivos de build
+/build
+/dist
+
+# Arquivos de cobertura de testes
+/coverage
+
+# Outros arquivos e pastas específicos do seu projeto
