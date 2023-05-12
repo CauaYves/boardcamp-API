@@ -17,16 +17,21 @@ export async function getClients(req, res) {
     }
 }
 export async function getClientById(req, res) {
-    try {
+    const { id } = req.params
 
+    try {
+        const answer = console.table((await db.query(`SELECT * FROM customers WHERE id = ${id};`)))
+        if(!answer) return res.sendStatus(404)
+
+        return res.send(answer)
     }
     catch (error) {
-        res.status(500).send(err.message)
+        res.status(500).send(error.message)
     }
 }
 export async function postClient(req, res) {
 
-    const {name, phone, cpf, birthday } = req.body
+    const { name, phone, cpf, birthday } = req.body
     try {
         const answer = await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${name}','${phone}','${cpf}','${birthday}');`)
         res.send(answer)
