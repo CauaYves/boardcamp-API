@@ -18,9 +18,10 @@ export async function getClients(req, res) {
 }
 export async function getClientById(req, res) {
     const { id } = req.params
+    const numId = Number(id)
 
     try {
-        const answer = console.table((await db.query(`SELECT * FROM customers WHERE id = ${id};`)))
+        const answer = console.table((await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)))
         if(!answer) return res.sendStatus(404)
 
         return res.send(answer)
