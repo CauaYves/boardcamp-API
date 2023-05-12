@@ -7,7 +7,16 @@ import { db } from "../database/database.connection.js"
 //     birthday: '1992-10-25'
 // }
 
-export function getClients(req, res) {
+export async function getClients(req, res) {
+    try {
+        const answer = console.table((await db.query(`SELECT * FROM customers;`)).rows)
+        return res.send(answer)
+    }
+    catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+export async function getClientById(req, res) {
     try {
 
     }
@@ -15,20 +24,15 @@ export function getClients(req, res) {
         res.status(500).send(err.message)
     }
 }
-export function getClientById(req, res) {
-    try {
+export async function postClient(req, res) {
 
+    const {name, phone, cpf, birthday } = req.body
+    try {
+        const answer = await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${name}','${phone}','${cpf}','${birthday}');`)
+        res.send(answer)
     }
     catch (error) {
-        res.status(500).send(err.message)
-    }
-}
-export function postClient(req, res) {
-    try {
-
-    }
-    catch (error) {
-        res.status(500).send(err.message)
+        res.status(500).send(error.message)
     }
 }
 export function updateClient(req, res) {
