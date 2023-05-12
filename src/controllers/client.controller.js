@@ -9,8 +9,8 @@ import { db } from "../database/database.connection.js"
 
 export async function getClients(req, res) {
     try {
-        const answer = console.table((await db.query(`SELECT * FROM customers;`)).rows)
-        return res.send(answer)
+        const answer = await db.query(`SELECT * FROM customers;`)
+        return res.send(answer.rows)
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -21,10 +21,10 @@ export async function getClientById(req, res) {
     const numId = Number(id)
 
     try {
-        const answer = console.table((await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)))
+        const answer = await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)
         if(!answer) return res.sendStatus(404)
 
-        return res.send(answer)
+        return res.send(answer.rows)
     }
     catch (error) {
         res.status(500).send(error.message)
