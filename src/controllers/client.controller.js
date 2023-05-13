@@ -1,5 +1,5 @@
 import { db } from "../database/database.connection.js"
-// { formato de um cliente
+// {
 //     id: 1,
 //     name: 'João Alfredo',
 //     phone: '21998899222',
@@ -9,8 +9,17 @@ import { db } from "../database/database.connection.js"
 
 export async function getClients(req, res) {
     try {
-        const answer = await db.query(`SELECT * FROM customers;`)
-        return res.send(answer.rows)
+        const answerString = await db.query(`SELECT * FROM customers;`)
+
+        const answer = answerString.rows
+
+        const formattedAnswer = answer.map(obj => ({
+            ...obj,
+            birthday: new Date(obj.birthday).toISOString().split('T')[0]
+          }));
+
+        return res.send(formattedAnswer)
+
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -21,10 +30,17 @@ export async function getClientById(req, res) {
     const numId = Number(id)
 
     try {
-        const answer = await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)
-        if(!answer) return res.sendStatus(404)
+        const answerString = await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)
+        if(answerString.rowCount === 0) return res.sendStatus(404)
 
-        return res.send(answer.rows)
+        const answer = answerString.rows
+
+        const formattedAnswer = answer.map(obj => ({
+            ...obj,
+            birthday: new Date(obj.birthday).toISOString().split('T')[0]
+          }));
+
+        return res.send(formattedAnswer)
     }
     catch (error) {
         res.status(500).send(error.message)
