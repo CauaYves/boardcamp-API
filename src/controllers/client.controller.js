@@ -1,4 +1,4 @@
-import { db } from "../database/database.connection.js"
+import db from "../database/database.connection.js"
 // {
 //     id: 1,
 //     name: 'João Alfredo',
@@ -39,7 +39,7 @@ export async function getClientById(req, res) {
             ...obj,
             birthday: new Date(obj.birthday).toISOString().split('T')[0]
           }));
-
+          console.log(typeof(formattedAnswer))
         return res.send(formattedAnswer)
     }
     catch (error) {
