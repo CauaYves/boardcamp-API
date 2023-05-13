@@ -34,8 +34,10 @@ export async function postClient(req, res) {
 
     const { name, phone, cpf, birthday } = req.body
     try {
-        const answer = await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${name}','${phone}','${cpf}','${birthday}');`)
-        res.status(201).send(answer)
+        const searchClient = await db.query(`SELECT * FROM customers WHERE cpf = '${cpf}'`)
+        if(searchClient.rowCount !== 0) return res.sendStatus(409)
+        await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${name}','${phone}','${cpf}','${birthday}');`)
+        res.sendStatus(201)
     }
     catch (error) {
         res.status(500).send(error.message)
