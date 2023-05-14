@@ -50,10 +50,12 @@ export async function postRentals(req, res) {
     try {
 
         const answer = await db.query(`SELECT * FROM games WHERE id = ${gameId};`)
-        const rentDays = answer.rows[0].pricePerDay * daysRented
-        const games = await db.query(`SELECT * FROM games WHERE ${gameId} = id`)
-        const stock = games.rows[0].stockTotal
+        const rentals = await db.query(`SELECT * FROM rentals`)
 
+        const rentDays = answer.rows[0].pricePerDay * daysRented
+        const stock = answer.rows[0].stockTotal
+        console.log(answer.rows)
+        if(stock <= rentals.rows.length) return res.sendStatus(400)
 
         const query = `
             INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
