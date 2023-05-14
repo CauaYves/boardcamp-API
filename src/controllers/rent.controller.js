@@ -38,13 +38,6 @@ export async function getRentals(req, res) {
         res.status(500).send(error.message)
     }
 }
-
-
-// SELECT *
-//         FROM customers
-//         JOIN rentals ON customers.id = rentals."customerId"
-//         JOIN games ON rentals."gameId" = games.id;
-
 export async function postRentals(req, res) {
 
     const { customerId, gameId, daysRented } = req.body
@@ -61,7 +54,7 @@ export async function postRentals(req, res) {
         const games = await db.query(`SELECT * FROM games WHERE ${gameId} = id`)
         const stock = games.rows[0].stockTotal
 
-        if (stock < 1) return res.sendStatus(400)
+        if (stock <= 1) return res.sendStatus(400)
 
         const query = `
             INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
