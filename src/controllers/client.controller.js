@@ -40,7 +40,7 @@ export async function getClientById(req, res) {
             birthday: new Date(obj.birthday).toISOString().split('T')[0]
           }));
           console.log(typeof(formattedAnswer))
-        return res.send(formattedAnswer)
+        return res.send(formattedAnswer[0])
     }
     catch (error) {
         res.status(500).send(error.message)
