@@ -54,7 +54,6 @@ export async function postRentals(req, res) {
         const games = await db.query(`SELECT * FROM games WHERE ${gameId} = id`)
         const stock = games.rows[0].stockTotal
 
-        if (stock <= 1) return res.sendStatus(400)
 
         const query = `
             INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
