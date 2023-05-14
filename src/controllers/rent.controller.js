@@ -1,21 +1,14 @@
 import db from "../database/database.connection.js"
 
-export function getRentals(req, res) {
+export async function getRentals(req, res) {
     try {
-
+        const rentals = await db.query(`SELECT * FROM rentals`)
+        res.send(rentals.rows)
     }
     catch (error) {
         res.status(500).send(error.message)
     }
 }
-
-
-
-
-
-
-
-
 
 export async function postRentals(req, res) {
 
@@ -49,20 +42,6 @@ export async function postRentals(req, res) {
         res.status(500).send(error.message)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function postFinalByIdRentals(req, res) {
     try {
 
