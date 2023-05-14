@@ -2,13 +2,48 @@ import db from "../database/database.connection.js"
 
 export async function getRentals(req, res) {
     try {
-        const rentals = await db.query(`SELECT * FROM rentals`)
-        res.send(rentals.rows)
+        const allSearch = await db.query(`
+            SELECT rentals.*, games.name AS game_name, customers.name AS customer_name, customers.phone, customers.cpf, customers.birthday
+            FROM rentals
+            JOIN games ON rentals."gameId" = games.id
+            JOIN customers ON rentals."customerId" = customers.id;
+        `)
+
+        const { rows } = allSearch
+
+        rows.map((rentals) => {
+            delete rentals.phone
+            delete rentals.birthday
+            delete rentals.cpf
+
+            let name = rentals.customer_name
+            let gameName = rentals.game_name
+
+            delete rentals.game_name
+            delete rentals.customer_name
+
+            rentals.game = {
+                id: rentals.id,
+                name: gameName
+            }
+            rentals.customer = {
+                id: rentals.id,
+                name
+            }
+        })
+
+        res.send(rows)
     }
     catch (error) {
         res.status(500).send(error.message)
     }
 }
+
+
+// SELECT *
+//         FROM customers
+//         JOIN rentals ON customers.id = rentals."customerId"
+//         JOIN games ON rentals."gameId" = games.id;
 
 export async function postRentals(req, res) {
 
@@ -26,7 +61,7 @@ export async function postRentals(req, res) {
         const games = await db.query(`SELECT * FROM games WHERE ${gameId} = id`)
         const stock = games.rows[0].stockTotal
 
-        if(stock < 1) return res.sendStatus(400)
+        if (stock < 1) return res.sendStatus(400)
 
         const query = `
             INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
