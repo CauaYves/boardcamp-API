@@ -77,8 +77,15 @@ export async function postFinalByIdRentals(req, res) {
         const { id } = req.params
         await db.query(`UPDATE rentals SET "returnDate" = (CURRENT_DATE) WHERE id = ${id}`)
         const rentals = await db.query(`SELECT * FROM rentals WHERE id = ${id} `)
+        if(rentals.rowCount === 0) return res.sendStatus(404)
 
-        const {rentDate, daysRented, returnDate} = rentals.rows[0]
+        const {rentDate, daysRented, returnDate, gameId} = rentals.rows[0]
+
+        const game = await db.query(`SELECT * FROM games WHERE id = ${gameId}`)
+
+        const {pricePerDay} = game.rows[0]
+        
+        if(returnDate !== null) return res.sendStatus(400)
         
         const daysRentedStamp = integerTimestamp(daysRented)        
         const returnDateStamp = timestamp(returnDate)
@@ -86,8 +93,8 @@ export async function postFinalByIdRentals(req, res) {
 
         const delayDays = daysRentedStamp + rentDateStamp
         const delayFee = Math.floor((returnDateStamp - delayDays) / (1000 * 60 * 60 * 24));
-
-        await db.query(`UPDATE rentals set "delayFee" = ${delayFee} WHERE id = ${id}`)
+        const priceTotal = delayFee * pricePerDay
+        await db.query(`UPDATE rentals set "delayFee" = ${priceTotal} WHERE id = ${id}`)
 
         res.sendStatus(200)
     }
