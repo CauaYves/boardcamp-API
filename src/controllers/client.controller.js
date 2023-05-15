@@ -1,11 +1,4 @@
 import db from "../database/database.connection.js"
-// {
-//     id: 1,
-//     name: 'João Alfredo',
-//     phone: '21998899222',
-//     cpf: '01234567890',
-//     birthday: '1992-10-25'
-// }
 
 export async function getClients(req, res) {
     try {
@@ -62,8 +55,14 @@ export async function postClient(req, res) {
 export async function updateClient(req, res) {
     try {
         const { name, phone, cpf, birthday } = req.body
-        const answerString = await db.query(`SELECT * FROM customers WHERE customers.cpf = '${cpf}'`)
-        console.log(answerString.rows[0])
+        const searchCostumer = await db.query(`SELECT * FROM customers WHERE customers.cpf = '${cpf}'`)
+        const nameSearch = searchCostumer.rows[0].name
+        const withoutSpaceName = name.replace(/\s/g, "")
+
+        if (nameSearch !== withoutSpaceName) return res.sendStatus(409)
+
+        await db.query(`UPDATE customers SET name = '${name}', phone = '${phone}', birthday = '${birthday}' WHERE cpf = '${cpf}'`);
+
         res.sendStatus(200)
     }
     catch (error) {
