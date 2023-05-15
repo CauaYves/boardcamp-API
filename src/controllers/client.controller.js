@@ -16,7 +16,7 @@ export async function getClients(req, res) {
         const formattedAnswer = answer.map(obj => ({
             ...obj,
             birthday: new Date(obj.birthday).toISOString().split('T')[0]
-          }));
+        }));
 
         return res.send(formattedAnswer)
 
@@ -31,15 +31,15 @@ export async function getClientById(req, res) {
 
     try {
         const answerString = await db.query(`SELECT * FROM customers WHERE customers.id = ${numId};`)
-        if(answerString.rowCount === 0) return res.sendStatus(404)
+        if (answerString.rowCount === 0) return res.sendStatus(404)
 
         const answer = answerString.rows
 
         const formattedAnswer = answer.map(obj => ({
             ...obj,
             birthday: new Date(obj.birthday).toISOString().split('T')[0]
-          }));
-          console.log(typeof(formattedAnswer))
+        }));
+        console.log(typeof (formattedAnswer))
         return res.send(formattedAnswer[0])
     }
     catch (error) {
@@ -51,7 +51,7 @@ export async function postClient(req, res) {
     const { name, phone, cpf, birthday } = req.body
     try {
         const searchClient = await db.query(`SELECT * FROM customers WHERE cpf = '${cpf}'`)
-        if(searchClient.rowCount !== 0) return res.sendStatus(409)
+        if (searchClient.rowCount !== 0) return res.sendStatus(409)
         await db.query(`INSERT INTO customers (name, phone, cpf, birthday) VALUES ('${name}','${phone}','${cpf}','${birthday}');`)
         res.sendStatus(201)
     }
@@ -59,11 +59,14 @@ export async function postClient(req, res) {
         res.status(500).send(error.message)
     }
 }
-export function updateClient(req, res) {
+export async function updateClient(req, res) {
     try {
-
+        const { name, phone, cpf, birthday } = req.body
+        const answerString = await db.query(`SELECT * FROM customers WHERE customers.cpf = '${cpf}'`)
+        console.log(answerString.rows[0])
+        res.sendStatus(200)
     }
     catch (error) {
-        res.status(500).send(err.message)
+        res.status(500).send(error.message)
     }
 }

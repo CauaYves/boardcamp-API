@@ -126,13 +126,3 @@ export async function deleteRental(req, res) {
         res.status(500).send(error.message)
     }
 }
-const RENTALSSS = {
-    "id": 1,
-    "customerId": 1,
-    "gameId": 1,
-    "rentDate": "2023-05-13T03:00:00.000Z",
-    "daysRented": 3,
-    "returnDate": null,
-    "originalPrice": 4500,
-    "delayFee": null
-}
