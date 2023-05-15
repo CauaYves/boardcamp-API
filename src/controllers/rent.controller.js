@@ -108,9 +108,19 @@ export async function postFinalByIdRentals(req, res) {
         res.status(500).send(error.message)
     }
 }
-export function deleteRental(req, res) {
+export async function deleteRental(req, res) {
     try {
+        const {id} = req.params
 
+        const thisIdExist = await db.query(`SELECT * FROM rentals WHERE id = ${id}`)
+        if(thisIdExist.rowCount === 0) return res.sendStatus(404)
+
+        const { returnDate } = thisIdExist.rows[0]
+        if(returnDate === null) return res.sendStatus(400)
+
+        await db.query(`DELETE FROM rentals WHERE id = ${id}`)
+
+        res.sendStatus(200)
     }
     catch (error) {
         res.status(500).send(error.message)
