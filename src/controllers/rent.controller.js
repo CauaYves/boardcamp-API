@@ -76,11 +76,15 @@ export async function postFinalByIdRentals(req, res) {
     try {
         const { id } = req.params
         const isReturned = await db.query(`SELECT * FROM rentals WHERE id = ${id}`)
-        if (isReturned.rows[0].returnDate !== null) return res.sendStatus(400)
+        if(isReturned.rows.length === 0) return res.sendStatus(404)
+        if ( isReturned.rows[0].returnDate !== null) return res.sendStatus(400)
+        
         await db.query(`UPDATE rentals SET "returnDate" = (CURRENT_DATE) WHERE id = ${id}`)
+        
         const rentals = await db.query(`SELECT * FROM rentals WHERE id = ${id} `)
+        
         if(rentals.rowCount === 0) return res.sendStatus(404)
-
+        
         const {rentDate, daysRented, returnDate, gameId} = rentals.rows[0]
 
         const game = await db.query(`SELECT * FROM games WHERE id = ${gameId}`)
