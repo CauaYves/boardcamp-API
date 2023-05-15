@@ -84,9 +84,7 @@ export async function postFinalByIdRentals(req, res) {
         const game = await db.query(`SELECT * FROM games WHERE id = ${gameId}`)
 
         const {pricePerDay} = game.rows[0]
-        
-        if(returnDate !== null) return res.sendStatus(400)
-        
+                
         const daysRentedStamp = integerTimestamp(daysRented)        
         const returnDateStamp = timestamp(returnDate)
         const rentDateStamp = timestamp(rentDate)
