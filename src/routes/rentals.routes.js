@@ -7,7 +7,7 @@ const rentals = Router()
 
 rentals.get("/rentals", getRentals)
 rentals.post("/rentals", validateSchema(idsRentalSchema), postRentals)
-rentals.post("/rentals/:id/return", validateSchema(rentalSchema), postFinalByIdRentals)
+rentals.post("/rentals/:id/return", postFinalByIdRentals)
 rentals.delete("/rentals/:id", validateSchema(rentalSchema), deleteRental)
 
 export default rentals

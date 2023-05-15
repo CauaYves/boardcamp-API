@@ -1,4 +1,5 @@
 import db from "../database/database.connection.js"
+import { integerTimestamp, timestamp } from "../functions/timestamp.function.js"
 
 export async function getRentals(req, res) {
     try {
@@ -55,7 +56,7 @@ export async function postRentals(req, res) {
         const rentDays = answer.rows[0].pricePerDay * daysRented
         const stock = answer.rows[0].stockTotal
         console.log(answer.rows)
-        if(stock <= rentals.rows.length) return res.sendStatus(400)
+        if (stock <= rentals.rows.length) return res.sendStatus(400)
 
         const query = `
             INSERT INTO rentals ("customerId", "gameId", "rentDate", "daysRented", "returnDate", "originalPrice", "delayFee")
@@ -71,9 +72,24 @@ export async function postRentals(req, res) {
         res.status(500).send(error.message)
     }
 }
-export function postFinalByIdRentals(req, res) {
+export async function postFinalByIdRentals(req, res) {
     try {
+        const { id } = req.params
+        await db.query(`UPDATE rentals SET "returnDate" = (CURRENT_DATE) WHERE id = ${id}`)
+        const rentals = await db.query(`SELECT * FROM rentals WHERE id = ${id} `)
 
+        const {rentDate, daysRented, returnDate} = rentals.rows[0]
+        
+        const daysRentedStamp = integerTimestamp(daysRented)        
+        const returnDateStamp = timestamp(returnDate)
+        const rentDateStamp = timestamp(rentDate)
+
+        const delayDays = daysRentedStamp + rentDateStamp
+        const delayFee = Math.floor((returnDateStamp - delayDays) / (1000 * 60 * 60 * 24));
+
+        await db.query(`UPDATE rentals set "delayFee" = ${delayFee} WHERE id = ${id}`)
+
+        res.sendStatus(200)
     }
     catch (error) {
         res.status(500).send(error.message)
@@ -86,4 +102,14 @@ export function deleteRental(req, res) {
     catch (error) {
         res.status(500).send(error.message)
     }
+}
+const RENTALSSS = {
+    "id": 1,
+    "customerId": 1,
+    "gameId": 1,
+    "rentDate": "2023-05-13T03:00:00.000Z",
+    "daysRented": 3,
+    "returnDate": null,
+    "originalPrice": 4500,
+    "delayFee": null
 }
